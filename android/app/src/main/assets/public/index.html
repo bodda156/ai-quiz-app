@@ -1,0 +1,1405 @@
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #1e2952, #090d1a 78%);
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.55);
+    }
+  }
+
+  @keyframes popSuccess {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.025); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes floatChar {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-4px); }
+  }
+
+  .app-wrapper {
+    width: 100%;
+    max-width: 570px;
+  }
+
+  .quiz-card {
+    background: rgba(20, 29, 61, 0.96);
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    border-radius: 24px;
+    padding: 26px;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.52);
+    animation: fadeSlideIn 0.35s ease;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.25);
+    color: #c7d2fe;
+    border: 1px solid rgba(129, 140, 248, 0.45);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: 30px;
+    margin-bottom: 6px;
+    color: #ffffff;
+  }
+
+  .subtitle {
+    color: #cbd5e1;
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 9px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
+    transition: 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
+  }
+
+  .options-grid,
+  .levels-row,
+  .count-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .option-btn,
+  .level-btn,
+  .count-btn {
+    background: #111c3a;
+    border: 1.5px solid #283866;
+    border-radius: 12px;
+    padding: 11px 8px;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.18s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .option-btn:hover,
+  .level-btn:hover,
+  .count-btn:hover {
+    transform: translateY(-2px);
+    border-color: #818cf8;
+  }
+
+  .option-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+  }
+
+  .option-btn .icon {
+    font-size: 20px;
+  }
+
+  .option-btn.active {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    border-color: #c4b5fd;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+  }
+
+  .level-btn.active {
+    background: #0284c7;
+    border-color: #7dd3fc;
+    color: #fff;
+  }
+
+  .count-btn.active {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    border-color: #bae6fd;
+    color: #fff;
+  }
+
+  .start-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: transform 0.15s ease, filter 0.2s ease;
+  }
+
+  .start-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+
+  .preview-box {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px dashed rgba(148, 163, 184, 0.35);
+    font-size: 13px;
+    color: #cbd5e1;
+    text-align: center;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .stat-pill {
+    background: #0f172a;
+    border: 1px solid #334155;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+  }
+
+  .timer-pill.danger {
+    border-color: #ef4444;
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.18);
+    animation: pulseGlow 0.9s infinite;
+  }
+
+  .sound-toggle-btn {
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .sound-toggle-btn.muted {
+    opacity: 0.65;
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
+
+  .operator-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, rgba(10, 15, 32, 0.96), rgba(22, 32, 66, 0.85));
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 16px;
+    padding: 11px 14px;
+    margin-bottom: 14px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 25px rgba(0, 0, 0, 0.45);
+    animation: fadeSlideIn 0.3s ease;
+  }
+
+  .operator-avatar {
+    width: 78px;
+    height: 78px;
+    border-radius: 14px;
+    background: #060913;
+    border: 1.5px solid #38bdf8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    animation: floatChar 2.8s ease-in-out infinite;
+    overflow: hidden;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.22);
+  }
+
+  .operator-avatar svg,
+  .operator-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .operator-info {
+    flex: 1;
+  }
+
+  .operator-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #38bdf8;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .operator-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .operator-quote {
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.4;
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+  }
+
+  .question-text {
+    font-size: 19px;
+    line-height: 1.45;
+    color: #ffffff;
+    margin-bottom: 14px;
+  }
+
+  .lifelines-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .life-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 9px 12px;
+    border-radius: 11px;
+    border: 1px solid #38bdf8;
+    background: rgba(14, 165, 233, 0.14);
+    color: #bae6fd;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .life-btn:hover:not(:disabled) {
+    background: rgba(14, 165, 233, 0.26);
+    transform: translateY(-1px);
+  }
+
+  .life-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: #475569;
+    color: #94a3b8;
+  }
+
+  .hint-box {
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    color: #fde68a;
+    border-radius: 12px;
+    padding: 10px 13px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    animation: fadeSlideIn 0.25s ease;
+  }
+
+  .choices-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .choice-btn {
+    width: 100%;
+    text-align: left;
+    padding: 13px 15px;
+    border-radius: 12px;
+    border: 1.5px solid #283866;
+    background: #111c3a;
+    color: #f1f5f9;
+    font-size: 14.5px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    border-color: #818cf8;
+    background: #182750;
+    transform: translateX(3px);
+  }
+
+  .choice-btn.correct {
+    background: rgba(16, 185, 129, 0.24);
+    border-color: #10b981;
+    color: #a7f3d0;
+    animation: popSuccess 0.3s ease;
+  }
+
+  .choice-btn.wrong {
+    background: rgba(239, 68, 68, 0.24);
+    border-color: #ef4444;
+    color: #fecaca;
+  }
+
+  .choice-btn.eliminated {
+    opacity: 0.25;
+    text-decoration: line-through;
+    pointer-events: none;
+  }
+
+  .explanation-box {
+    background: rgba(15, 23, 42, 0.9);
+    border-left: 4px solid #8b5cf6;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 13.5px;
+    color: #cbd5e1;
+    animation: fadeSlideIn 0.25s ease;
+  }
+
+  .explanation-box p {
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .pep-banner {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(16, 185, 129, 0.18));
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    border-radius: 12px;
+    padding: 10px 13px;
+    font-size: 13px;
+    color: #e0e7ff;
+    margin-bottom: 14px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .result-card {
+    text-align: center;
+  }
+
+  .result-hero-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .trophy {
+    font-size: 40px;
+    margin-bottom: 4px;
+  }
+
+  .result-summary {
+    background: #0f172a;
+    border: 1px solid #283866;
+    border-radius: 16px;
+    padding: 16px;
+    margin: 16px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .result-item span {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 4px;
+  }
+
+  .result-item strong {
+    font-size: 16px;
+    color: #ffffff;
+  }
+</style>
+
+<div class="app-wrapper">
+  <section class="quiz-card" id="startScreen">
+    <div class="badge">AI Quiz Master • Cinematic Edition</div>
+    <h1>Welcome!</h1>
+    <p class="subtitle">150 سؤال متنوع بدون تكرار، مع دعم سينمائي وتنبيهات صوتية وتشجيع مستمر!</p>
+
+    <div class="form-group">
+      <label for="playerName">Enter your name</label>
+      <input type="text" id="playerName" placeholder="e.g. Alex" />
+    </div>
+
+    <div class="form-group">
+      <label>Choose Category:</label>
+      <div class="options-grid" id="categoryGroup">
+        <button type="button" class="option-btn active" data-value="Computer Science">
+          <span class="icon">💻</span>
+          <span>Computer Science</span>
+        </button>
+        <button type="button" class="option-btn" data-value="Technology">
+          <span class="icon">🌐</span>
+          <span>Technology</span>
+        </button>
+        <button type="button" class="option-btn" data-value="General Knowledge">
+          <span class="icon">📚</span>
+          <span>General Knowledge</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Number of Questions (No Repeats):</label>
+      <div class="count-row" id="countGroup">
+        <button type="button" class="count-btn active" data-value="10">10 Questions</button>
+        <button type="button" class="count-btn" data-value="25">25 Questions</button>
+        <button type="button" class="count-btn" data-value="50">50 Questions</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Difficulty Level:</label>
+      <div class="levels-row" id="levelGroup">
+        <button type="button" class="level-btn active" data-value="Easy">Easy</button>
+        <button type="button" class="level-btn" data-value="Medium">Medium</button>
+        <button type="button" class="level-btn" data-value="Hard">Hard</button>
+      </div>
+    </div>
+
+    <button type="button" class="start-btn" id="startBtn">Deploy Mission ▶</button>
+
+    <div class="preview-box" id="previewBox">
+      Ready: <strong>Player</strong> • Computer Science • 10 Qs • Easy
+    </div>
+  </section>
+
+  <section class="quiz-card hidden" id="gameScreen">
+    <div class="top-bar">
+      <span class="stat-pill" id="scoreDisplay">⭐ Score: 0</span>
+      <span class="stat-pill timer-pill" id="timerDisplay">⏱ 15s</span>
+      <span class="stat-pill" id="levelDisplay">Level: Easy</span>
+      <button type="button" class="stat-pill sound-toggle-btn" id="soundToggleBtn">🔊 Sound: ON</button>
+    </div>
+
+    <div class="operator-banner" id="operatorBanner">
+      <div class="operator-avatar" id="operatorAvatar"></div>
+      <div class="operator-info">
+        <span class="operator-tag" id="operatorTag">CINEMATIC RECON // FIELD UNIT</span>
+        <strong class="operator-name" id="operatorName">Commander Vance</strong>
+        <p class="operator-quote" id="operatorQuote">حظ سعيد يا بطل! كمّل كده وأنا مغطيك 🔥</p>
+      </div>
+    </div>
+
+    <div class="progress-row">
+      <span id="questionProgress">Question 1 of 10</span>
+      <span id="streakBadge">🔥 Streak: 0</span>
+    </div>
+
+    <h2 class="question-text" id="questionText">Loading question...</h2>
+
+    <div class="lifelines-bar">
+      <button type="button" class="life-btn" id="hintBtn">💡 Hint (<span id="hintLeft">2</span>)</button>
+      <button type="button" class="life-btn" id="fiftyBtn">✂️ 50/50 (<span id="fiftyLeft">1</span>)</button>
+    </div>
+
+    <div class="hint-box hidden" id="hintBox"></div>
+
+    <div class="choices-list" id="choicesList"></div>
+
+    <div class="explanation-box hidden" id="explanationBox">
+      <strong>Explanation:</strong>
+      <p id="explanationText"></p>
+    </div>
+
+    <div class="pep-banner hidden" id="pepBanner"></div>
+
+    <button type="button" class="start-btn hidden" id="nextBtn">Next Question ➔</button>
+  </section>
+
+  <section class="quiz-card hidden result-card" id="resultScreen">
+    <div class="result-hero-box">
+      <div class="operator-avatar" id="resultOperatorAvatar" style="width: 88px; height: 88px;"></div>
+    </div>
+    <div class="trophy">🏆</div>
+    <h1>Mission Complete!</h1>
+    <p class="subtitle" id="resultPlayerText">Great job, Player!</p>
+    <div class="pep-banner" id="finalCheerText">أداء أسطوري يا وحش، كملت التحدي بثبات 💪</div>
+
+    <div class="result-summary">
+      <div class="result-item">
+        <span>Final Score</span>
+        <strong id="finalScore">0</strong>
+      </div>
+      <div class="result-item">
+        <span>Questions & Level</span>
+        <strong id="finalMeta">10 Qs • Easy</strong>
+      </div>
+    </div>
+
+    <button type="button" class="start-btn" id="restartBtn">↻ Play Again</button>
+  </section>
+</div>
+<script>
+const SoundFX = (() => {
+  let ctx = null;
+  let enabled = true;
+  let tensionTimer = null;
+
+  function ensureContext() {
+    if (!enabled) return null;
+    if (!ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) ctx = new AudioCtx();
+    }
+    if (ctx && ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
+    }
+    return ctx;
+  }
+
+  function playTone(freq, duration, type = "sine", gainVal = 0.12, delay = 0) {
+    const audioCtx = ensureContext();
+    if (!audioCtx) return;
+
+    const startTime = audioCtx.currentTime + delay;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(gainVal, startTime + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.02);
+  }
+
+  function playApplause() {
+    const audioCtx = ensureContext();
+    if (!audioCtx) return;
+
+    const clapTimes = [0, 0.08, 0.15, 0.22, 0.3, 0.38, 0.47, 0.57];
+    clapTimes.forEach((t, idx) => {
+      const bufferSize = Math.floor(audioCtx.sampleRate * 0.065);
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+      }
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(1400 + (idx % 3) * 250, audioCtx.currentTime + t);
+      filter.Q.setValueAtTime(1.2, audioCtx.currentTime + t);
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.22, audioCtx.currentTime + t);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + t + 0.065);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      noise.start(audioCtx.currentTime + t);
+    });
+
+    playTone(523.25, 0.14, "triangle", 0.12, 0.05);
+    playTone(659.25, 0.14, "triangle", 0.12, 0.18);
+    playTone(783.99, 0.25, "triangle", 0.14, 0.31);
+  }
+
+  function playLaugh() {
+    const laughs = [
+      { f: 420, d: 0.11, t: 0.0 },
+      { f: 380, d: 0.11, t: 0.13 },
+      { f: 440, d: 0.11, t: 0.26 },
+      { f: 350, d: 0.13, t: 0.39 },
+      { f: 310, d: 0.22, t: 0.54 }
+    ];
+    laughs.forEach((n) => {
+      playTone(n.f, n.d, "sawtooth", 0.08, n.t);
+      playTone(n.f * 1.5, n.d * 0.9, "triangle", 0.05, n.t);
+    });
+  }
+
+  function startTension(secondsLeft) {
+    stopTension();
+    if (!enabled) return;
+
+    const intervalMs = secondsLeft <= 5 ? 280 : secondsLeft <= 10 ? 460 : 720;
+    let step = 0;
+
+    tensionTimer = setInterval(() => {
+      if (!enabled) return;
+      const isUrgent = step % 2 === 0;
+      playTone(isUrgent ? 110 : 82.41, 0.12, "sawtooth", isUrgent ? 0.075 : 0.055, 0);
+      if (isUrgent) {
+        playTone(440, 0.05, "sine", 0.03, 0.02);
+      }
+      step++;
+    }, intervalMs);
+  }
+
+  function stopTension() {
+    if (tensionTimer) {
+      clearInterval(tensionTimer);
+      tensionTimer = null;
+    }
+  }
+
+  function setEnabled(val) {
+    enabled = val;
+    if (!enabled) stopTension();
+  }
+
+  function isEnabled() {
+    return enabled;
+  }
+
+  return {
+    playApplause,
+    playLaugh,
+    startTension,
+    stopTension,
+    setEnabled,
+    isEnabled
+  };
+})();
+
+const tacticalCharacters = [
+  {
+    name: "Commander Vance",
+    tag: "CINEMATIC RECON // FIELD UNIT",
+    accent: "#38bdf8",
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg1" cx="65%" cy="25%" r="75%">
+          <stop offset="0%" stop-color="#1e3a5f"/>
+          <stop offset="55%" stop-color="#0b1120"/>
+          <stop offset="100%" stop-color="#03050a"/>
+        </radialGradient>
+        <linearGradient id="rimBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#7dd3fc"/>
+          <stop offset="60%" stop-color="#0284c7"/>
+          <stop offset="100%" stop-color="#0f172a"/>
+        </linearGradient>
+        <linearGradient id="faceShade1" x1="20%" y1="10%" x2="85%" y2="90%">
+          <stop offset="0%" stop-color="#d6a98a"/>
+          <stop offset="55%" stop-color="#9c6f54"/>
+          <stop offset="100%" stop-color="#472d20"/>
+        </linearGradient>
+        <linearGradient id="armorDark" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#273244"/>
+          <stop offset="100%" stop-color="#0c111b"/>
+        </linearGradient>
+      </defs>
+      <rect width="120" height="120" fill="url(#bg1)"/>
+      <circle cx="85" cy="28" r="34" fill="#38bdf8" opacity="0.12"/>
+      <path d="M14 120 C18 86, 42 74, 60 74 C78 74, 102 86, 106 120 Z" fill="url(#armorDark)" stroke="url(#rimBlue)" stroke-width="1.5"/>
+      <path d="M26 120 C30 94, 45 84, 60 84 C75 84, 90 94, 94 120" fill="none" stroke="#475569" stroke-width="2"/>
+      <rect x="48" y="92" width="24" height="14" rx="3" fill="#111827" stroke="#64748b" stroke-width="1"/>
+      <path d="M49 62 L71 62 L74 78 L46 78 Z" fill="#6e4a37"/>
+      <path d="M39 38 C39 24, 81 24, 81 38 C82 54, 73 67, 60 69 C47 67, 38 54, 39 38 Z" fill="url(#faceShade1)"/>
+      <path d="M41 48 C42 61, 50 68, 60 69 C70 68, 78 61, 79 48 C75 56, 68 62, 60 62 C52 62, 45 56, 41 48 Z" fill="#1f1a18" opacity="0.55"/>
+      <path d="M44 41 L55 39" stroke="#1c1917" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M65 39 L76 41" stroke="#1c1917" stroke-width="2.4" stroke-linecap="round"/>
+      <ellipse cx="50" cy="45" rx="4" ry="2.2" fill="#0f172a"/>
+      <ellipse cx="70" cy="45" rx="4" ry="2.2" fill="#0f172a"/>
+      <circle cx="50.8" cy="44.7" r="1.1" fill="#e0f2fe"/>
+      <circle cx="70.8" cy="44.7" r="1.1" fill="#e0f2fe"/>
+      <path d="M60 43 L58.5 53 L62.5 54" fill="none" stroke="#5c3b2b" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M53 60 Q60 58.5 67 60" fill="none" stroke="#4a2e21" stroke-width="2" stroke-linecap="round"/>
+      <path d="M35 41 C35 17, 85 17, 85 41 C83 33, 73 28, 60 28 C47 28, 37 33, 35 41 Z" fill="url(#armorDark)" stroke="url(#rimBlue)" stroke-width="1.6"/>
+      <path d="M36 37 L84 37" stroke="#0f172a" stroke-width="2.5"/>
+      <path d="M82 37 C89 37, 90 48, 83 51 L80 51" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M81 51 L68 57" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round"/>
+      <rect x="0" y="0" width="120" height="8" fill="#000" opacity="0.65"/>
+      <rect x="0" y="112" width="120" height="8" fill="#000" opacity="0.65"/>
+    </svg>`
+  },
+  {
+    name: "Shadow Operative",
+    tag: "STEALTH UNIT // NIGHT OPS",
+    accent: "#c084fc",
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg2" cx="25%" cy="25%" r="80%">
+          <stop offset="0%" stop-color="#3b1d5e"/>
+          <stop offset="55%" stop-color="#0d101f"/>
+          <stop offset="100%" stop-color="#030408"/>
+        </radialGradient>
+        <linearGradient id="rimPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#e9d5ff"/>
+          <stop offset="55%" stop-color="#9333ea"/>
+          <stop offset="100%" stop-color="#1e1b4b"/>
+        </linearGradient>
+        <linearGradient id="maskGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#475569"/>
+          <stop offset="60%" stop-color="#1e293b"/>
+          <stop offset="100%" stop-color="#090d16"/>
+        </linearGradient>
+      </defs>
+      <rect width="120" height="120" fill="url(#bg2)"/>
+      <circle cx="32" cy="28" r="36" fill="#a855f7" opacity="0.14"/>
+      <path d="M12 120 C16 85, 40 73, 60 73 C80 73, 104 85, 108 120 Z" fill="#111827" stroke="url(#rimPurple)" stroke-width="1.5"/>
+      <path d="M38 78 L60 98 L82 78" fill="none" stroke="#64748b" stroke-width="2"/>
+      <path d="M38 38 C38 20, 82 20, 82 38 C83 56, 74 68, 60 70 C46 68, 37 56, 38 38 Z" fill="url(#maskGrad)" stroke="url(#rimPurple)" stroke-width="1.4"/>
+      <path d="M43 53 Q60 59 77 53" fill="none" stroke="#94a3b8" stroke-width="1.2" opacity="0.5"/>
+      <path d="M45 58 Q60 64 75 58" fill="none" stroke="#94a3b8" stroke-width="1.2" opacity="0.35"/>
+      <rect x="42" y="39" width="15" height="8" rx="2.5" fill="#090d16" stroke="#c084fc" stroke-width="1.4"/>
+      <rect x="63" y="39" width="15" height="8" rx="2.5" fill="#090d16" stroke="#c084fc" stroke-width="1.4"/>
+      <line x1="57" y1="43" x2="63" y2="43" stroke="#c084fc" stroke-width="1.6"/>
+      <circle cx="50" cy="43" r="2" fill="#e9d5ff"/>
+      <circle cx="70" cy="43" r="2" fill="#e9d5ff"/>
+      <rect x="0" y="0" width="120" height="8" fill="#000" opacity="0.65"/>
+      <rect x="0" y="112" width="120" height="8" fill="#000" opacity="0.65"/>
+    </svg>`
+  },
+  {
+    name: "Apex Vanguard",
+    tag: "STRIKE COMMAND // HIGH ALERT",
+    accent: "#f59e0b",
+    svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg3" cx="75%" cy="20%" r="80%">
+          <stop offset="0%" stop-color="#5c3a14"/>
+          <stop offset="55%" stop-color="#11131c"/>
+          <stop offset="100%" stop-color="#040508"/>
+        </radialGradient>
+        <linearGradient id="rimGold" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#fde68a"/>
+          <stop offset="55%" stop-color="#d97706"/>
+          <stop offset="100%" stop-color="#1e293b"/>
+        </linearGradient>
+        <linearGradient id="faceShade3" x1="15%" y1="10%" x2="85%" y2="90%">
+          <stop offset="0%" stop-color="#e0b596"/>
+          <stop offset="60%" stop-color="#9e6d4f"/>
+          <stop offset="100%" stop-color="#3f2618"/>
+        </linearGradient>
+      </defs>
+      <rect width="120" height="120" fill="url(#bg3)"/>
+      <circle cx="88" cy="26" r="35" fill="#f59e0b" opacity="0.14"/>
+      <path d="M13 120 C17 85, 41 73, 60 73 C79 73, 103 85, 107 120 Z" fill="#181c26" stroke="url(#rimGold)" stroke-width="1.5"/>
+      <path d="M44 76 L60 102 L76 76" fill="none" stroke="url(#rimGold)" stroke-width="2"/>
+      <path d="M49 62 L71 62 L74 78 L46 78 Z" fill="#6b4632"/>
+      <path d="M39 38 C39 24, 81 24, 81 38 C82 54, 73 67, 60 69 C47 67, 38 54, 39 38 Z" fill="url(#faceShade3)"/>
+      <path d="M44 41 L55 39" stroke="#18181b" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M65 39 L76 41" stroke="#18181b" stroke-width="2.4" stroke-linecap="round"/>
+      <ellipse cx="50" cy="45" rx="4" ry="2.2" fill="#090d16"/>
+      <ellipse cx="70" cy="45" rx="4" ry="2.2" fill="#090d16"/>
+      <circle cx="50.8" cy="44.7" r="1.1" fill="#fef3c7"/>
+      <circle cx="70.8" cy="44.7" r="1.1" fill="#fef3c7"/>
+      <path d="M60 43 L58.5 53 L62.5 54" fill="none" stroke="#573626" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M52 60 Q60 58 68 60" fill="none" stroke="#45291c" stroke-width="2" stroke-linecap="round"/>
+      <path d="M35 41 C35 17, 85 17, 85 41 C83 33, 73 28, 60 28 C47 28, 37 33, 35 41 Z" fill="#1e2430" stroke="url(#rimGold)" stroke-width="1.6"/>
+      <path d="M45 27 L75 27" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+      <rect x="0" y="0" width="120" height="8" fill="#000" opacity="0.65"/>
+      <rect x="0" y="112" width="120" height="8" fill="#000" opacity="0.65"/>
+    </svg>`
+  }
+];
+
+const goodLuckQuotes = [
+  "حظ سعيد يا بطل! كمّل كده وأنا مأمنلك الضهر 🔥",
+  "إشارة جاهزية كاملة: ركز في الهدف وكمّل بنفس القوة 🎯",
+  "ثباتك ممتاز! خد نفس وكمّل كده للنهاية 💪"
+];
+
+const correctCheers = [
+  "إصابة مباشرة في الهدف! كمل كده يا وحش 🔥",
+  "ممتاز جداً، سلسلتك ماشية زي السكينة 💪",
+  "أداء نظيف! كل سؤال بتحله بيقربك من الفوز ⭐"
+];
+
+const wrongCheers = [
+  "ولا يهمك! حتى أبطال المهام بيتعلموا من الغلط، كمّل كده 🚀",
+  "إعادة تمركز سريعة.. اقرأ الشرح وادخل على اللي بعده بثقة 💡",
+  "لسه المعركة في إيدك! ركز في الجاي وهتعوضها ⚡"
+];
+
+const baseQuestions = {
+  "Computer Science": [
+    { question: "What does CPU stand for?", options: ["Central Processing Unit", "Computer Personal Unit", "Central Program Utility", "Core Processing User"], correctIndex: 0, hint: "Often called the brain of the computer.", explanation: "CPU stands for Central Processing Unit." },
+    { question: "Which data structure uses LIFO (Last In, First Out)?", options: ["Queue", "Stack", "Array", "Graph"], correctIndex: 1, hint: "Think of a stack of plates.", explanation: "A Stack removes the most recently added item first (LIFO)." },
+    { question: "What is the decimal value of binary 1010?", options: ["8", "10", "12", "14"], correctIndex: 1, hint: "8 + 2 equals what?", explanation: "1×8 + 0×4 + 1×2 + 0×1 = 10." },
+    { question: "Which algorithm uses divide and conquer on sorted data?", options: ["Linear Search", "Binary Search", "Bubble Sort", "Selection Sort"], correctIndex: 1, hint: "Cuts the search space in half each step.", explanation: "Binary search halves the sorted array at every step." },
+    { question: "What does SQL stand for?", options: ["Structured Query Language", "Simple Question Logic", "System Queue Link", "Sequential Quality List"], correctIndex: 0, hint: "Used with relational databases.", explanation: "SQL is Structured Query Language." },
+    { question: "Which data structure follows FIFO (First In, First Out)?", options: ["Stack", "Queue", "Tree", "Set"], correctIndex: 1, hint: "Like waiting in a checkout line.", explanation: "A Queue processes elements in FIFO order." },
+    { question: "What is the worst-case time complexity of binary search?", options: ["O(n)", "O(log n)", "O(n^2)", "O(1)"], correctIndex: 1, hint: "Logarithmic growth in steps.", explanation: "Binary search takes O(log n) comparisons in the worst case." },
+    { question: "Which logic gate outputs TRUE only when all inputs are TRUE?", options: ["OR", "XOR", "AND", "NOR"], correctIndex: 2, hint: "Every input must be 1.", explanation: "An AND gate outputs 1 only when all inputs are 1." },
+    { question: "What does RAM stand for?", options: ["Read Access Memory", "Random Access Memory", "Rapid Action Module", "Runtime Allocation Map"], correctIndex: 1, hint: "Temporary fast memory for active tasks.", explanation: "RAM stands for Random Access Memory." },
+    { question: "Which traversal visits Left, then Root, then Right in a BST?", options: ["Preorder", "Inorder", "Postorder", "BFS"], correctIndex: 1, hint: "Gives sorted order on a binary search tree.", explanation: "Inorder traversal visits Left -> Root -> Right." },
+    { question: "What is hexadecimal 'F' in decimal?", options: ["10", "12", "15", "16"], correctIndex: 2, hint: "Last single hex digit before 10 (hex).", explanation: "Hexadecimal F equals 15 in decimal." },
+    { question: "Which OSI layer handles IP routing?", options: ["Physical", "Data Link", "Network", "Session"], correctIndex: 2, hint: "Layer 3 in the OSI model.", explanation: "The Network layer handles logical addressing and routing." },
+    { question: "What uniquely identifies each row in a relational table?", options: ["Foreign Key", "Primary Key", "Index Alias", "View"], correctIndex: 1, hint: "Cannot have duplicate or NULL values.", explanation: "A Primary Key uniquely identifies every record in a table." },
+    { question: "Which sorting algorithm swaps adjacent elements?", options: ["Merge Sort", "Bubble Sort", "Quick Sort", "Counting Sort"], correctIndex: 1, hint: "Larger or smaller values bubble step by step.", explanation: "Bubble Sort compares and swaps adjacent pairs." },
+    { question: "What does OS stand for?", options: ["Optical System", "Operating System", "Output Server", "Object Storage"], correctIndex: 1, hint: "Examples: Linux, Windows, macOS.", explanation: "OS stands for Operating System." },
+    { question: "Which number system has base 8?", options: ["Binary", "Octal", "Decimal", "Hexadecimal"], correctIndex: 1, hint: "Uses digits 0 through 7.", explanation: "Octal is a base-8 numbering system." },
+    { question: "What is a compiler's main job?", options: ["Translate whole source code into machine/target code", "Style web pages", "Manage Wi-Fi signals", "Store user passwords"], correctIndex: 0, hint: "Processes code before execution.", explanation: "A compiler translates high-level code into lower-level code." },
+    { question: "Which structure has nodes connected via parent-child links?", options: ["Tree", "Stack", "Array", "Bitmask"], correctIndex: 0, hint: "Starts from a single root node.", explanation: "A Tree is a hierarchical data structure with a root and children." },
+    { question: "What does HTTP status code 404 mean?", options: ["OK", "Not Found", "Created", "Forbidden"], correctIndex: 1, hint: "The requested resource wasn't found on the server.", explanation: "HTTP 404 indicates the requested resource could not be found." },
+    { question: "Which loop always executes its body at least once?", options: ["for loop", "while loop", "do-while loop", "None"], correctIndex: 2, hint: "Condition is checked at the end of the iteration.", explanation: "A do-while loop runs once before evaluating its exit condition." },
+    { question: "What is recursion in programming?", options: ["A function calling itself", "A loop that never stops", "A database join", "A syntax error"], correctIndex: 0, hint: "Needs a base case to stop.", explanation: "Recursion occurs when a function calls itself to solve smaller subproblems." },
+    { question: "How many bits are in one byte?", options: ["4", "8", "16", "32"], correctIndex: 1, hint: "Standard byte size.", explanation: "One standard byte equals 8 bits." },
+    { question: "Which data structure is best for BFS (Breadth-First Search)?", options: ["Queue", "Stack", "Hash Table", "Heap"], correctIndex: 0, hint: "Explores level by level in arrival order.", explanation: "BFS typically uses a Queue to visit nodes level by level." },
+    { question: "What is an algorithm?", options: ["Step-by-step procedure to solve a problem", "A physical cable", "A monitor panel", "A text font"], correctIndex: 0, hint: "A clear sequence of instructions.", explanation: "An algorithm is a finite, well-defined set of steps to solve a task." },
+    { question: "Which gate is the opposite of an AND gate?", options: ["NAND", "OR", "BUFFER", "XNOR"], correctIndex: 0, hint: "NOT + AND.", explanation: "A NAND gate outputs the inverted result of an AND gate." },
+    { question: "What does IDE stand for in software development?", options: ["Integrated Development Environment", "Internal Data Engine", "Index Design Editor", "Input Device Emulator"], correctIndex: 0, hint: "Tools like VS Code or IntelliJ.", explanation: "IDE stands for Integrated Development Environment." },
+    { question: "Which memory is non-volatile?", options: ["SRAM", "DRAM", "SSD / ROM", "CPU Registers"], correctIndex: 2, hint: "Keeps data when power is turned off.", explanation: "ROM and SSD storage retain data without continuous power." },
+    { question: "What does HTML stand for?", options: ["HyperText Markup Language", "High Transfer Machine Logic", "Hyperlink Text Mode Link", "Home Tool Markup Layout"], correctIndex: 0, hint: "Structures content on web pages.", explanation: "HTML stands for HyperText Markup Language." },
+    { question: "Which sorting algorithm averages O(n log n) and uses divide & conquer?", options: ["Merge Sort", "Bubble Sort", "Insertion Sort", "Bogosort"], correctIndex: 0, hint: "Splits arrays in half and merges sorted halves.", explanation: "Merge Sort divides, sorts recursively, and merges in O(n log n)." },
+    { question: "What is a boolean value?", options: ["True or False", "Any decimal number", "A long text string", "An image file"], correctIndex: 0, hint: "Two possible states.", explanation: "A boolean represents one of two values: true or false." },
+    { question: "Which command in Git saves a snapshot of staged changes?", options: ["git commit", "git clone", "git status", "git checkout"], correctIndex: 0, hint: "Records changes to the repository history.", explanation: "git commit records staged changes with a message." },
+    { question: "What is a variable in programming?", options: ["A named storage location for data", "A type of keyboard", "A network router", "A screen resolution"], correctIndex: 0, hint: "Its value can be read or updated.", explanation: "A variable names a memory location holding a value." },
+    { question: "Which protocol assigns IP addresses automatically on a network?", options: ["DHCP", "FTP", "SMTP", "POP3"], correctIndex: 0, hint: "Dynamic Host Configuration Protocol.", explanation: "DHCP dynamically assigns IP addresses to devices on a network." },
+    { question: "What is an array index typically starting at in C, Java, and JS?", options: ["0", "1", "-1", "2"], correctIndex: 0, hint: "Zero-based indexing.", explanation: "Most C-family languages use 0-based array indexing." },
+    { question: "Which concept hides internal details and exposes only needed parts?", options: ["Abstraction", "Infinite Loop", "Hardcoding", "Fragmentation"], correctIndex: 0, hint: "Simplifies complexity by hiding details.", explanation: "Abstraction exposes essential features while hiding implementation details." },
+    { question: "What is hexadecimal base?", options: ["2", "8", "10", "16"], correctIndex: 3, hint: "Uses 16 symbols (0-9 and A-F).", explanation: "Hexadecimal is base 16." },
+    { question: "Which structure maps keys to fast average O(1) lookups?", options: ["Hash Table / Map", "Linked List", "Queue", "Binary Tree"], correctIndex: 0, hint: "Uses a hash function to compute buckets.", explanation: "Hash tables provide fast average-case lookups via keys." },
+    { question: "What does CSS primarily control on a webpage?", options: ["Presentation and styling", "Database schemas", "BIOS firmware", "Audio drivers"], correctIndex: 0, hint: "Colors, layout, fonts, and spacing.", explanation: "CSS controls visual styling and layout of HTML elements." },
+    { question: "What is a deadlock in operating systems?", options: ["Processes waiting on each other forever", "Fastest CPU mode", "Disk defragmentation", "Screen sleep"], correctIndex: 0, hint: "Circular waiting with no progress.", explanation: "Deadlock happens when two or more processes block each other indefinitely." },
+    { question: "Which operator checks strict equality (value and type) in JavaScript?", options: ["===", "=", "!=", "=>"], correctIndex: 0, hint: "Three equals signs.", explanation: "=== compares both value and data type without type coercion." },
+    { question: "What does API stand for?", options: ["Application Programming Interface", "Automated Program Installer", "Active Protocol Index", "App Process Input"], correctIndex: 0, hint: "Interface between software components.", explanation: "API stands for Application Programming Interface." },
+    { question: "Which graph search explores as deep as possible along each branch first?", options: ["DFS (Depth-First Search)", "BFS", "Dijkstra", "Round Robin"], correctIndex: 0, hint: "Goes deep before backtracking.", explanation: "DFS explores along a branch as far as possible before backtracking." },
+    { question: "What is a syntax error?", options: ["Violation of programming language grammar rules", "Slow internet speed", "Low battery", "Missing monitor"], correctIndex: 0, hint: "Caught before or during parsing/compilation.", explanation: "A syntax error means the code breaks language grammar rules." },
+    { question: "Which SQL clause filters rows based on a condition?", options: ["WHERE", "GROUP BY", "SELECT", "ORDER BY"], correctIndex: 0, hint: "Used to specify row criteria.", explanation: "The WHERE clause filters records matching a condition." },
+    { question: "What is binary 1111 in decimal?", options: ["14", "15", "16", "31"], correctIndex: 1, hint: "8 + 4 + 2 + 1.", explanation: "1111 in binary equals 8 + 4 + 2 + 1 = 15." },
+    { question: "Which data structure has no duplicate elements by definition?", options: ["Set", "Array", "List", "Stack"], correctIndex: 0, hint: "Stores unique values only.", explanation: "A Set is a collection of unique elements." },
+    { question: "What does CLI stand for?", options: ["Command-Line Interface", "Central Logic Instruction", "Cloud Link Integration", "Code Layout Index"], correctIndex: 0, hint: "Text-based terminal commands.", explanation: "CLI stands for Command-Line Interface." },
+    { question: "What is a function parameter?", options: ["Input variable defined in a function signature", "A hard drive partition", "A browser cookie", "A CSS color"], correctIndex: 0, hint: "Receives arguments when called.", explanation: "Parameters are variables listed in a function definition." },
+    { question: "Which term describes repeating a block of code?", options: ["Iteration / Loop", "Compilation", "Encryption", "Serialization"], correctIndex: 0, hint: "for, while, etc.", explanation: "Iteration is repeating instructions using loops." },
+    { question: "What is the main role of a DNS server?", options: ["Resolve domain names to IP addresses", "Compile C++ code", "Cool the GPU", "Format USB drives"], correctIndex: 0, hint: "Phonebook of the internet.", explanation: "DNS translates human-readable domains into IP addresses." }
+  ],
+  "Technology": [
+    { question: "What does AI stand for?", options: ["Artificial Intelligence", "Advanced Internet", "Automated Information", "Intelligent Algorithm"], correctIndex: 0, hint: "Smart machines and models.", explanation: "AI stands for Artificial Intelligence." },
+    { question: "Which protocol secures web traffic?", options: ["HTTP", "FTP", "HTTPS", "Telnet"], correctIndex: 2, hint: "Uses TLS/SSL encryption.", explanation: "HTTPS encrypts data transmitted over the web." },
+    { question: "What is cloud computing?", options: ["Local USB storage", "On-demand internet computing resources", "A type of keyboard", "An offline calculator"], correctIndex: 1, hint: "Servers and services over the internet.", explanation: "Cloud computing provides computing resources over the internet." },
+    { question: "What is two-factor authentication (2FA)?", options: ["Two identical passwords", "A second verification step beyond password", "Two monitors", "Two browsers"], correctIndex: 1, hint: "Adds an extra layer like a code or authenticator.", explanation: "2FA requires two forms of identity verification." },
+    { question: "What does IoT stand for?", options: ["Internet of Things", "Input of Technology", "Internal Optical Transfer", "Integrated Online Tool"], correctIndex: 0, hint: "Connected smart devices and sensors.", explanation: "IoT stands for Internet of Things." },
+    { question: "What is Docker widely used for?", options: ["Containerizing applications", "Printing 3D models", "Cleaning dust", "Editing RAW photos"], correctIndex: 0, hint: "Packages apps with their dependencies.", explanation: "Docker packages and runs applications in lightweight containers." },
+    { question: "What does JSON stand for?", options: ["JavaScript Object Notation", "Java System Output Network", "Joint Server Object Name", "Just Simple Ordered Nodes"], correctIndex: 0, hint: "Text format with key-value pairs.", explanation: "JSON stands for JavaScript Object Notation." },
+    { question: "What is phishing?", options: ["Deceptive attempts to steal sensitive data", "A network speed test", "A GPU fan curve", "A file compression format"], correctIndex: 0, hint: "Fake emails or links pretending to be trusted.", explanation: "Phishing tricks users into revealing credentials or sensitive info." },
+    { question: "What does GPU stand for?", options: ["Graphics Processing Unit", "General Program Utility", "Global Power Unit", "Gateway Protocol User"], correctIndex: 0, hint: "Handles graphics and parallel math.", explanation: "GPU stands for Graphics Processing Unit." },
+    { question: "Which wireless tech connects short-range peripherals like earbuds?", options: ["Bluetooth", "Ethernet", "HDMI", "DisplayPort"], correctIndex: 0, hint: "Short-range wireless standard.", explanation: "Bluetooth is designed for short-range wireless communication." },
+    { question: "What is open-source software?", options: ["Code available for inspection and modification", "Software without updates", "Only for supercomputers", "A type of battery"], correctIndex: 0, hint: "Community-accessible source code.", explanation: "Open-source software makes its source code open to view and modify." },
+    { question: "What is edge computing?", options: ["Processing data near its source", "Deleting backups", "Only using offline maps", "Turning off Wi-Fi"], correctIndex: 0, hint: "Lower latency for nearby sensors/devices.", explanation: "Edge computing processes data closer to where it is generated." },
+    { question: "What does VPN primarily help with?", options: ["Encrypted tunneling over networks", "Increasing monitor refresh rate", "Replacing RAM", "Cleaning registry"], correctIndex: 0, hint: "Creates an encrypted connection.", explanation: "A VPN creates an encrypted network tunnel." },
+    { question: "What is a REST API mainly based on?", options: ["Standard HTTP methods and resources", "Physical punch cards", "Analog radio waves", "Printer cables"], correctIndex: 0, hint: "Uses GET, POST, PUT, DELETE.", explanation: "REST APIs commonly use HTTP requests to interact with resources." },
+    { question: "Which storage type generally has much faster read/write than HDD?", options: ["SSD", "Floppy Disk", "Magnetic Tape", "CD-RW"], correctIndex: 0, hint: "Solid-state flash memory.", explanation: "SSDs use flash memory with no moving platters, offering faster access." },
+    { question: "What does SaaS stand for?", options: ["Software as a Service", "System as a Storage", "Security as a Script", "Server as a Sound"], correctIndex: 0, hint: "Cloud apps accessed via browser.", explanation: "SaaS stands for Software as a Service." },
+    { question: "What is machine learning?", options: ["Systems learning patterns from data", "Manually writing every rule", "Replacing CPUs with wood", "A type of HDMI cable"], correctIndex: 0, hint: "Trains models on examples/data.", explanation: "Machine learning enables systems to learn patterns from data." },
+    { question: "What does QR code stand for?", options: ["Quick Response code", "Quantum Router code", "Quality Record code", "Query Result code"], correctIndex: 0, hint: "2D matrix barcode scanned by cameras.", explanation: "QR stands for Quick Response." },
+    { question: "Which port/cable carries both digital video and audio to TVs/monitors?", options: ["HDMI", "RJ11", "PS/2", "Serial DB9"], correctIndex: 0, hint: "Very common on TVs and monitors.", explanation: "HDMI transmits high-definition video and audio." },
+    { question: "What is malware?", options: ["Malicious software designed to harm or exploit", "A mechanical keyboard switch", "A screen protector", "A Wi-Fi channel"], correctIndex: 0, hint: "Includes viruses, trojans, and ransomware.", explanation: "Malware is software built for harmful or unauthorized actions." },
+    { question: "What does URL stand for?", options: ["Uniform Resource Locator", "Universal Routing Link", "Unified Record List", "User Request Log"], correctIndex: 0, hint: "Web address format.", explanation: "URL stands for Uniform Resource Locator." },
+    { question: "What is CI/CD in modern software teams?", options: ["Continuous Integration and Continuous Delivery/Deployment", "Central Input and Cache Drive", "Code Index and Compression", "Client Interface Design"], correctIndex: 0, hint: "Automates testing and releasing code.", explanation: "CI/CD automates building, testing, and deploying software changes." },
+    { question: "Which database type stores data as JSON-like documents?", options: ["Document NoSQL database", "Punch-card ledger", "Audio waveform file", "Spreadsheet PDF"], correctIndex: 0, hint: "Flexible schema documents.", explanation: "Document databases store flexible semi-structured documents." },
+    { question: "What is latency in networking?", options: ["Time delay for data to travel", "Screen brightness", "Battery capacity", "Font size"], correctIndex: 0, hint: "Often measured in milliseconds (ms).", explanation: "Latency is the delay before data transfer begins after a request." },
+    { question: "What does 5G refer to?", options: ["Fifth generation of cellular mobile networks", "5 gigabytes of RAM", "5th version of HTML", "5 graphics cards"], correctIndex: 0, hint: "Modern high-speed mobile wireless.", explanation: "5G is the fifth generation of mobile cellular network technology." },
+    { question: "What is a firewall?", options: ["Network security barrier filtering traffic", "A cooling fan", "A power supply", "A mouse pad"], correctIndex: 0, hint: "Monitors incoming/outgoing traffic by rules.", explanation: "A firewall filters network traffic based on security rules." },
+    { question: "What does SSH provide?", options: ["Secure remote shell access", "Unencrypted plain text transfer", "HDMI video output", "Audio equalization"], correctIndex: 0, hint: "Encrypted command-line connection.", explanation: "SSH provides a secure, encrypted channel for remote access." },
+    { question: "What is a cookie in web browsers?", options: ["Small data piece stored by browser for a site", "A compiled binary executable", "A hardware heatsink", "A router antenna"], correctIndex: 0, hint: "Helps remember sessions or preferences.", explanation: "Cookies store small pieces of data associated with a website." },
+    { question: "What is virtualization?", options: ["Running virtual instances of hardware/OS resources", "Printing on paper", "Manual soldering", "Deleting system files"], correctIndex: 0, hint: "Hypervisors and VMs.", explanation: "Virtualization creates virtual versions of servers, storage, or OSes." },
+    { question: "What does OCR do?", options: ["Recognizes text inside images/scans", "Boosts Wi-Fi range", "Encodes MP4 video", "Measures CPU watts"], correctIndex: 0, hint: "Optical Character Recognition.", explanation: "OCR converts text in images or scanned documents into editable text." },
+    { question: "What is a load balancer?", options: ["Distributes traffic across multiple servers", "Weighs server racks", "Cools hard drives", "Edits CSS files"], correctIndex: 0, hint: "Improves reliability and scale.", explanation: "A load balancer spreads incoming requests across backend servers." },
+    { question: "What does IoT sensor telemetry usually send?", options: ["Measurements like temperature or motion", "CSS stylesheets", "BIOS passwords", "ZIP archives"], correctIndex: 0, hint: "Real-world readings.", explanation: "Sensors send environmental or device telemetry data." },
+    { question: "What is encryption?", options: ["Scrambling data so only authorized keys can read it", "Compressing images into PNG", "Restarting Windows", "Cleaning browser cache"], correctIndex: 0, hint: "Turns plaintext into ciphertext.", explanation: "Encryption protects data confidentiality using cryptographic keys." },
+    { question: "What does PWA stand for in web tech?", options: ["Progressive Web App", "Private Wireless Adapter", "Primary Window Action", "Public Web Archive"], correctIndex: 0, hint: "Web app with app-like capabilities.", explanation: "PWA stands for Progressive Web App." },
+    { question: "What is a token in authentication?", options: ["Credential representing verified identity/session", "A physical coin", "A monitor cable", "A CSS selector"], correctIndex: 0, hint: "Often passed in API headers.", explanation: "Auth tokens represent verified access rights without resending passwords." },
+    { question: "What does RAID help improve in storage setups?", options: ["Redundancy, performance, or both", "Monitor color accuracy", "Keyboard typing speed", "Bluetooth range"], correctIndex: 0, hint: "Uses multiple disks together.", explanation: "RAID combines multiple drives for redundancy, speed, or capacity." },
+    { question: "What is a webhook?", options: ["Automated HTTP callback triggered by an event", "A fishing lure", "A USB hub", "A local font"], correctIndex: 0, hint: "Event-driven push notification between apps.", explanation: "Webhooks send real-time HTTP payloads when events happen." },
+    { question: "What does AR stand for?", options: ["Augmented Reality", "Automated Routing", "Analog Resolution", "Active Register"], correctIndex: 0, hint: "Overlays digital info onto the real world.", explanation: "AR stands for Augmented Reality." },
+    { question: "What is a sandbox environment?", options: ["Isolated space to safely test code/files", "A beach simulation game", "A disk cleanup tool", "A power mode"], correctIndex: 0, hint: "Isolates untrusted or experimental execution.", explanation: "A sandbox isolates execution to prevent unintended side effects." },
+    { question: "What does YAML primarily serve as?", options: ["Human-readable data/config format", "Graphics card BIOS", "Audio codec", "Antivirus engine"], correctIndex: 0, hint: "Common in config files using indentation.", explanation: "YAML is a human-friendly data serialization/configuration format." },
+    { question: "What is a CDN?", options: ["Content Delivery Network", "Central Data Node", "Code Debug Network", "Cloud Disk Name"], correctIndex: 0, hint: "Edge servers closer to users.", explanation: "A CDN caches and delivers static/media content closer to users." },
+    { question: "What is two-way TLS / mTLS?", options: ["Both client and server verify certificates", "No encryption used", "Only passwords checked", "Wi-Fi turned off"], correctIndex: 0, hint: "Mutual authentication.", explanation: "Mutual TLS requires both client and server to present valid certificates." },
+    { question: "What does NLP stand for in AI?", options: ["Natural Language Processing", "Network Layer Protocol", "Native Logic Parser", "Neural Link Port"], correctIndex: 0, hint: "Understanding and generating human language.", explanation: "NLP stands for Natural Language Processing." },
+    { question: "What is a backup's main purpose?", options: ["Recovering data after loss or corruption", "Speeding up mouse clicks", "Changing screen themes", "Reducing RAM usage"], correctIndex: 0, hint: "Safety copy of important data.", explanation: "Backups allow restoring data if it is lost, deleted, or corrupted." },
+    { question: "What does GUI stand for?", options: ["Graphical User Interface", "Global Update Index", "General Utility Installer", "Graphics Unit Input"], correctIndex: 0, hint: "Windows, icons, buttons, and menus.", explanation: "GUI stands for Graphical User Interface." },
+    { question: "What is telemetry in software/systems?", options: ["Automated collection of metrics/logs/traces", "A type of keyboard layout", "A video transition", "A file extension"], correctIndex: 0, hint: "Observability data.", explanation: "Telemetry collects operational metrics, logs, and traces." },
+    { question: "What is a microservice architecture?", options: ["App split into small independent services", "One giant single file", "A micro-SD card", "A text editor"], correctIndex: 0, hint: "Independent deployable services.", explanation: "Microservices structure an app as small, loosely coupled services." },
+    { question: "What does FTP stand for?", options: ["File Transfer Protocol", "Fast Text Processor", "Frame Timing Pulse", "Folder Tree Path"], correctIndex: 0, hint: "Transfers files over a network.", explanation: "FTP stands for File Transfer Protocol." },
+    { question: "What is refactoring in code?", options: ["Improving internal code structure without changing behavior", "Deleting the entire project", "Buying a new monitor", "Changing Wi-Fi password"], correctIndex: 0, hint: "Cleaner code, same output.", explanation: "Refactoring restructures existing code to improve clarity and maintainability." },
+    { question: "What does SDK stand for?", options: ["Software Development Kit", "System Drive Key", "Secure Data Kernel", "Screen Display Kit"], correctIndex: 0, hint: "Tools/libraries for building apps on a platform.", explanation: "SDK stands for Software Development Kit." }
+  ],
+  "General Knowledge": [
+    { question: "Which planet is known as the Red Planet?", options: ["Venus", "Mars", "Jupiter", "Saturn"], correctIndex: 1, hint: "Fourth planet from the Sun.", explanation: "Mars gets its reddish hue from iron oxide on its surface." },
+    { question: "How many continents are there on Earth?", options: ["5", "6", "7", "8"], correctIndex: 2, hint: "Seven major landmasses.", explanation: "There are 7 continents on Earth." },
+    { question: "What is the chemical symbol for Oxygen?", options: ["Au", "O", "Ag", "Fe"], correctIndex: 1, hint: "Single capital letter.", explanation: "'O' is the chemical symbol for Oxygen." },
+    { question: "Which ocean is the largest on Earth?", options: ["Indian Ocean", "Atlantic Ocean", "Pacific Ocean", "Arctic Ocean"], correctIndex: 2, hint: "Largest and deepest ocean.", explanation: "The Pacific Ocean is the largest ocean on Earth." },
+    { question: "How many days are in a standard (non-leap) year?", options: ["360", "365", "366", "354"], correctIndex: 1, hint: "One day fewer than a leap year.", explanation: "A standard year has 365 days." },
+    { question: "Which gas do plants take in for photosynthesis?", options: ["Oxygen", "Carbon Dioxide", "Argon", "Neon"], correctIndex: 1, hint: "CO2.", explanation: "Plants absorb carbon dioxide during photosynthesis." },
+    { question: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Talc"], correctIndex: 2, hint: "10 on the Mohs scale.", explanation: "Diamond is the hardest known natural mineral." },
+    { question: "Which instrument measures temperature?", options: ["Barometer", "Thermometer", "Compass", "Hygrometer"], correctIndex: 1, hint: "Measures hot or cold.", explanation: "A thermometer measures temperature." },
+    { question: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], correctIndex: 1, hint: "Hex means six.", explanation: "A hexagon has 6 sides." },
+    { question: "Which planet is closest to the Sun?", options: ["Mercury", "Venus", "Earth", "Mars"], correctIndex: 0, hint: "First planet from the Sun.", explanation: "Mercury is the closest planet to the Sun." },
+    { question: "What is the boiling point of pure water at sea level in Celsius?", options: ["50°C", "90°C", "100°C", "120°C"], correctIndex: 2, hint: "Standard reference point on Celsius.", explanation: "Pure water boils at 100°C at standard atmospheric pressure." },
+    { question: "Which organ pumps blood through the body?", options: ["Lungs", "Heart", "Stomach", "Skin"], correctIndex: 1, hint: "Muscular pump in the chest.", explanation: "The heart pumps blood through the circulatory system." },
+    { question: "What is the capital city of Japan?", options: ["Seoul", "Tokyo", "Bangkok", "Beijing"], correctIndex: 1, hint: "Major city on Honshu.", explanation: "Tokyo is the capital of Japan." },
+    { question: "Which metal has the chemical symbol 'Au'?", options: ["Silver", "Gold", "Copper", "Lead"], correctIndex: 1, hint: "From Latin 'aurum'.", explanation: "'Au' is the chemical symbol for Gold." },
+    { question: "How many minutes are in one hour?", options: ["30", "45", "60", "90"], correctIndex: 2, hint: "Sixty seconds per minute.", explanation: "There are 60 minutes in an hour." },
+    { question: "Which planet has prominent icy rings?", options: ["Saturn", "Mercury", "Mars", "Venus"], correctIndex: 0, hint: "Sixth planet from the Sun.", explanation: "Saturn is famous for its extensive ring system." },
+    { question: "What is the largest mammal on Earth?", options: ["African Elephant", "Blue Whale", "Giraffe", "Orca"], correctIndex: 1, hint: "Lives in the ocean.", explanation: "The Blue Whale is the largest known animal/mammal." },
+    { question: "How many colors are in a standard rainbow?", options: ["5", "6", "7", "8"], correctIndex: 2, hint: "Red, orange, yellow, green, blue, indigo, violet.", explanation: "A standard rainbow displays 7 distinct colors." },
+    { question: "Which gas makes up most of Earth's atmosphere?", options: ["Nitrogen", "Oxygen", "Carbon Dioxide", "Hydrogen"], correctIndex: 0, hint: "Around 78% of dry air.", explanation: "Nitrogen makes up about 78% of Earth's atmosphere." },
+    { question: "What is the capital of Egypt?", options: ["Alexandria", "Cairo", "Giza", "Aswan"], correctIndex: 1, hint: "Located along the Nile.", explanation: "Cairo is the capital of Egypt." },
+    { question: "How many degrees are in a right angle?", options: ["45°", "90°", "180°", "360°"], correctIndex: 1, hint: "Quarter of a full circle.", explanation: "A right angle measures 90 degrees." },
+    { question: "Which part of a plant anchors it and absorbs water?", options: ["Roots", "Petals", "Pollen", "Thorns"], correctIndex: 0, hint: "Usually underground.", explanation: "Roots anchor the plant and absorb water and nutrients." },
+    { question: "What is the chemical symbol for Water?", options: ["H2O", "CO2", "NaCl", "O2"], correctIndex: 0, hint: "Two hydrogen atoms and one oxygen atom.", explanation: "Water has the chemical formula H2O." },
+    { question: "Which continent is the Sahara Desert in?", options: ["Asia", "Africa", "Europe", "South America"], correctIndex: 1, hint: "Northern part of this continent.", explanation: "The Sahara Desert is in North Africa." },
+    { question: "How many seconds are in a minute?", options: ["30", "60", "100", "120"], correctIndex: 1, hint: "Sixty ticks of a second hand.", explanation: "There are 60 seconds in a minute." },
+    { question: "Which planet is the largest in our solar system?", options: ["Earth", "Jupiter", "Neptune", "Mars"], correctIndex: 1, hint: "Massive gas giant.", explanation: "Jupiter is the largest planet in the solar system." },
+    { question: "What do bees collect from flowers to make honey?", options: ["Nectar", "Sand", "Salt", "Clay"], correctIndex: 0, hint: "Sweet liquid inside flowers.", explanation: "Bees collect nectar from flowers and convert it into honey." },
+    { question: "Which organ helps humans breathe in oxygen?", options: ["Lungs", "Kidneys", "Liver", "Heart"], correctIndex: 0, hint: "Pair of organs in the chest.", explanation: "The lungs facilitate gas exchange to take in oxygen." },
+    { question: "What is the freezing point of pure water in Celsius?", options: ["0°C", "10°C", "-10°C", "32°C"], correctIndex: 0, hint: "Zero on the Celsius scale.", explanation: "Pure water freezes at 0°C at standard pressure." },
+    { question: "Which shape has three sides?", options: ["Square", "Triangle", "Pentagon", "Octagon"], correctIndex: 1, hint: "Tri means three.", explanation: "A triangle has 3 sides." },
+    { question: "What is the capital of France?", options: ["Lyon", "Paris", "Marseille", "Nice"], correctIndex: 1, hint: "Home to the Eiffel Tower.", explanation: "Paris is the capital of France." },
+    { question: "Which direction is opposite to North?", options: ["East", "West", "South", "Northeast"], correctIndex: 2, hint: "Bottom of a standard map.", explanation: "South is directly opposite to North." },
+    { question: "How many teeth does a typical adult human have (including wisdom teeth)?", options: ["20", "28", "32", "36"], correctIndex: 2, hint: "Usually 32 full set.", explanation: "A typical adult human has 32 permanent teeth." },
+    { question: "Which planet is famous for its reddish dust and two small moons?", options: ["Mars", "Venus", "Uranus", "Neptune"], correctIndex: 0, hint: "Phobos and Deimos orbit it.", explanation: "Mars has two small moons, Phobos and Deimos." },
+    { question: "What is the chemical symbol for Sodium?", options: ["So", "Na", "Sd", "Sn"], correctIndex: 1, hint: "From Latin 'natrium'.", explanation: "'Na' is the chemical symbol for Sodium." },
+    { question: "Which animal is known as the fastest land animal?", options: ["Cheetah", "Horse", "Greyhound", "Lion"], correctIndex: 0, hint: "Can reach high bursts of speed.", explanation: "The cheetah is the fastest land mammal." },
+    { question: "How many months are in a year?", options: ["10", "12", "14", "24"], correctIndex: 1, hint: "January through December.", explanation: "There are 12 months in a year." },
+    { question: "What is the capital of Italy?", options: ["Milan", "Venice", "Rome", "Naples"], correctIndex: 2, hint: "Historic city on the Tiber.", explanation: "Rome is the capital of Italy." },
+    { question: "Which sense uses the eyes?", options: ["Hearing", "Sight", "Taste", "Touch"], correctIndex: 1, hint: "Vision.", explanation: "Sight (vision) uses the eyes." },
+    { question: "What is the largest continent by land area?", options: ["Africa", "Asia", "Europe", "North America"], correctIndex: 1, hint: "Largest landmass continent.", explanation: "Asia is the largest continent in both area and population." },
+    { question: "How many sides does an octagon have?", options: ["6", "7", "8", "10"], correctIndex: 2, hint: "Oct means eight like an octopus.", explanation: "An octagon has 8 sides." },
+    { question: "What is the main source of light and heat for Earth?", options: ["The Moon", "The Sun", "Polaris", "Mars"], correctIndex: 1, hint: "Our central star.", explanation: "The Sun provides Earth's primary light and thermal energy." },
+    { question: "Which element has the chemical symbol 'Fe'?", options: ["Iron", "Fluorine", "Francium", "Fermium"], correctIndex: 0, hint: "From Latin 'ferrum'.", explanation: "'Fe' is the chemical symbol for Iron." },
+    { question: "What is the capital of Germany?", options: ["Munich", "Berlin", "Hamburg", "Frankfurt"], correctIndex: 1, hint: "City in northeastern Germany.", explanation: "Berlin is the capital of Germany." },
+    { question: "Which bird cannot fly and lives in cold southern regions?", options: ["Eagle", "Penguin", "Sparrow", "Falcon"], correctIndex: 1, hint: "Great swimmer, flightless bird.", explanation: "Penguins are flightless birds adapted for swimming." },
+    { question: "How many zeros are in one thousand?", options: ["2", "3", "4", "6"], correctIndex: 1, hint: "1,000.", explanation: "One thousand (1,000) has 3 zeros." },
+    { question: "Which ocean lies between the Americas and Europe/Africa?", options: ["Atlantic Ocean", "Indian Ocean", "Southern Ocean", "Arctic Ocean"], correctIndex: 0, hint: "Second largest ocean.", explanation: "The Atlantic Ocean lies between the Americas and Europe/Africa." },
+    { question: "What is the center of an atom made of?", options: ["Protons and neutrons", "Only electrons", "Photons", "Ice crystals"], correctIndex: 0, hint: "The atomic nucleus.", explanation: "An atom's nucleus contains protons and neutrons." },
+    { question: "Which instrument has 88 keys on a standard model?", options: ["Piano", "Violin", "Flute", "Trumpet"], correctIndex: 0, hint: "Keyboard instrument.", explanation: "A standard full-size piano has 88 keys." },
+    { question: "What is the capital of Spain?", options: ["Barcelona", "Madrid", "Seville", "Valencia"], correctIndex: 1, hint: "Central Spanish capital.", explanation: "Madrid is the capital of Spain." }
+  ]
+};
+
+const levelSettings = {
+  Easy: { time: 20, points: 100 },
+  Medium: { time: 15, points: 150 },
+  Hard: { time: 10, points: 200 }
+};
+
+const startScreen = document.getElementById("startScreen");
+const gameScreen = document.getElementById("gameScreen");
+const resultScreen = document.getElementById("resultScreen");
+
+const nameInput = document.getElementById("playerName");
+const categoryButtons = document.querySelectorAll("#categoryGroup .option-btn");
+const countButtons = document.querySelectorAll("#countGroup .count-btn");
+const levelButtons = document.querySelectorAll("#levelGroup .level-btn");
+const startBtn = document.getElementById("startBtn");
+const previewBox = document.getElementById("previewBox");
+
+const scoreDisplay = document.getElementById("scoreDisplay");
+const timerDisplay = document.getElementById("timerDisplay");
+const levelDisplay = document.getElementById("levelDisplay");
+const soundToggleBtn = document.getElementById("soundToggleBtn");
+
+const operatorAvatar = document.getElementById("operatorAvatar");
+const operatorTag = document.getElementById("operatorTag");
+const operatorName = document.getElementById("operatorName");
+const operatorQuote = document.getElementById("operatorQuote");
+
+const questionProgress = document.getElementById("questionProgress");
+const streakBadge = document.getElementById("streakBadge");
+const questionText = document.getElementById("questionText");
+const hintBtn = document.getElementById("hintBtn");
+const fiftyBtn = document.getElementById("fiftyBtn");
+const hintLeftSpan = document.getElementById("hintLeft");
+const fiftyLeftSpan = document.getElementById("fiftyLeft");
+const hintBox = document.getElementById("hintBox");
+const choicesList = document.getElementById("choicesList");
+const explanationBox = document.getElementById("explanationBox");
+const explanationText = document.getElementById("explanationText");
+const pepBanner = document.getElementById("pepBanner");
+const nextBtn = document.getElementById("nextBtn");
+
+const resultOperatorAvatar = document.getElementById("resultOperatorAvatar");
+const resultPlayerText = document.getElementById("resultPlayerText");
+const finalCheerText = document.getElementById("finalCheerText");
+const finalScore = document.getElementById("finalScore");
+const finalMeta = document.getElementById("finalMeta");
+const restartBtn = document.getElementById("restartBtn");
+
+let playerName = "Player";
+let selectedCategory = "Computer Science";
+let selectedCount = 10;
+let selectedLevel = "Easy";
+let currentQuestions = [];
+let currentIndex = 0;
+let score = 0;
+let streak = 0;
+let timeLeft = 15;
+let timerInterval = null;
+let answered = false;
+let hintsLeft = 2;
+let fiftyLeft = 1;
+
+function updatePreview() {
+  const currentName = nameInput.value.trim() || "Player";
+  previewBox.innerHTML = `Ready: <strong>${currentName}</strong> • ${selectedCategory} • ${selectedCount} Qs • ${selectedLevel}`;
+}
+
+function setOperator(index, customQuote) {
+  const char = tacticalCharacters[index % tacticalCharacters.length];
+  operatorAvatar.innerHTML = char.svg;
+  operatorAvatar.style.borderColor = char.accent;
+  operatorTag.textContent = char.tag;
+  operatorTag.style.color = char.accent;
+  operatorName.textContent = char.name;
+  operatorQuote.textContent = customQuote;
+}
+
+categoryButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    categoryButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedCategory = btn.dataset.value;
+    updatePreview();
+  });
+});
+
+countButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    countButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedCount = Number(btn.dataset.value);
+    updatePreview();
+  });
+});
+
+levelButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    levelButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedLevel = btn.dataset.value;
+    updatePreview();
+  });
+});
+
+nameInput.addEventListener("input", updatePreview);
+
+soundToggleBtn.addEventListener("click", () => {
+  const nextState = !SoundFX.isEnabled();
+  SoundFX.setEnabled(nextState);
+  soundToggleBtn.textContent = nextState ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+  soundToggleBtn.classList.toggle("muted", !nextState);
+  if (nextState && !answered && !gameScreen.classList.contains("hidden")) {
+    SoundFX.startTension(timeLeft);
+  }
+});
+
+function shuffleArray(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function shuffleQuestionOptions(item) {
+  const indexedOptions = item.options.map((text, idx) => ({
+    text,
+    isCorrect: idx === item.correctIndex
+  }));
+
+  const shuffledOptions = shuffleArray(indexedOptions);
+  const newCorrectIndex = shuffledOptions.findIndex((opt) => opt.isCorrect);
+
+  return {
+    question: item.question,
+    options: shuffledOptions.map((opt) => opt.text),
+    correctIndex: newCorrectIndex,
+    hint: item.hint,
+    explanation: item.explanation
+  };
+}
+
+function buildQuestionsList(category, count) {
+  const pool = baseQuestions[category] || baseQuestions["Computer Science"];
+  const shuffledQuestions = shuffleArray(pool);
+  const selected = shuffledQuestions.slice(0, Math.min(count, shuffledQuestions.length));
+
+  return selected.map((item) => shuffleQuestionOptions(item));
+}
+
+function startGame() {
+  playerName = nameInput.value.trim() || "Player";
+  currentQuestions = buildQuestionsList(selectedCategory, selectedCount);
+  currentIndex = 0;
+  score = 0;
+  streak = 0;
+  hintsLeft = 2;
+  fiftyLeft = 1;
+
+  setOperator(0, `حظ سعيد يا ${playerName}! كمّل كده وأنا مغطيك 🔥`);
+  resultOperatorAvatar.innerHTML = tacticalCharacters[2].svg;
+  resultOperatorAvatar.style.borderColor = tacticalCharacters[2].accent;
+
+  scoreDisplay.textContent = `⭐ Score: ${score}`;
+  streakBadge.textContent = `🔥 Streak: ${streak}`;
+  levelDisplay.textContent = `Level: ${selectedLevel}`;
+  hintLeftSpan.textContent = hintsLeft;
+  fiftyLeftSpan.textContent = fiftyLeft;
+  hintBtn.disabled = false;
+  fiftyBtn.disabled = false;
+
+  startScreen.classList.add("hidden");
+  resultScreen.classList.add("hidden");
+  gameScreen.classList.remove("hidden");
+
+  loadQuestion();
+}
+
+function loadQuestion() {
+  clearInterval(timerInterval);
+  answered = false;
+  hintBox.classList.add("hidden");
+  explanationBox.classList.add("hidden");
+  pepBanner.classList.add("hidden");
+  nextBtn.classList.add("hidden");
+
+  hintBtn.disabled = hintsLeft <= 0;
+  fiftyBtn.disabled = fiftyLeft <= 0;
+
+  if (currentIndex > 0) {
+    setOperator(currentIndex, goodLuckQuotes[currentIndex % goodLuckQuotes.length]);
+  }
+
+  const q = currentQuestions[currentIndex];
+  questionProgress.textContent = `Question ${currentIndex + 1} of ${currentQuestions.length}`;
+  questionText.textContent = q.question;
+  choicesList.innerHTML = "";
+
+  q.options.forEach((optionText, idx) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "choice-btn";
+    btn.dataset.index = idx;
+    btn.textContent = `${String.fromCharCode(65 + idx)}. ${optionText}`;
+    btn.addEventListener("click", () => selectAnswer(idx, btn));
+    choicesList.appendChild(btn);
+  });
+
+  timeLeft = levelSettings[selectedLevel].time;
+  updateTimerUI();
+  SoundFX.startTension(timeLeft);
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+
+    if (timeLeft === 10 || timeLeft === 5) {
+      SoundFX.startTension(timeLeft);
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      handleTimeOut();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  timerDisplay.textContent = `⏱ ${timeLeft}s`;
+  if (timeLeft <= 5) {
+    timerDisplay.classList.add("danger");
+  } else {
+    timerDisplay.classList.remove("danger");
+  }
+}
+
+hintBtn.addEventListener("click", () => {
+  if (answered || hintsLeft <= 0) return;
+  hintsLeft--;
+  hintLeftSpan.textContent = hintsLeft;
+  hintBtn.disabled = true;
+
+  const q = currentQuestions[currentIndex];
+  hintBox.textContent = `💡 Hint: ${q.hint}`;
+  hintBox.classList.remove("hidden");
+});
+
+fiftyBtn.addEventListener("click", () => {
+  if (answered || fiftyLeft <= 0) return;
+  fiftyLeft--;
+  fiftyLeftSpan.textContent = fiftyLeft;
+  fiftyBtn.disabled = true;
+
+  const q = currentQuestions[currentIndex];
+  const allBtns = Array.from(choicesList.querySelectorAll(".choice-btn"));
+  const wrongBtns = allBtns.filter((b) => Number(b.dataset.index) !== q.correctIndex);
+
+  wrongBtns.slice(0, 2).forEach((btn) => {
+    btn.classList.add("eliminated");
+    btn.disabled = true;
+  });
+});
+
+function selectAnswer(chosenIndex, chosenBtn) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  SoundFX.stopTension();
+
+  const q = currentQuestions[currentIndex];
+  const allChoiceBtns = choicesList.querySelectorAll(".choice-btn");
+  allChoiceBtns.forEach((b) => (b.disabled = true));
+
+  if (chosenIndex === q.correctIndex) {
+    chosenBtn.classList.add("correct");
+    streak++;
+    score += levelSettings[selectedLevel].points;
+    scoreDisplay.textContent = `⭐ Score: ${score}`;
+    streakBadge.textContent = `🔥 Streak: ${streak}`;
+    pepBanner.textContent = correctCheers[currentIndex % correctCheers.length];
+    setOperator(1, `وحش يا ${playerName}! سلسلة نجاحك ${streak}.. كمّل كده! 🔥`);
+    SoundFX.playApplause();
+  } else {
+    chosenBtn.classList.add("wrong");
+    allChoiceBtns[q.correctIndex].classList.add("correct");
+    streak = 0;
+    streakBadge.textContent = `🔥 Streak: ${streak}`;
+    pepBanner.textContent = wrongCheers[currentIndex % wrongCheers.length];
+    setOperator(2, `خليك صاحي يا ${playerName}! استعد للسؤال الجاي وكمّل 💪`);
+    SoundFX.playLaugh();
+  }
+
+  explanationText.textContent = q.explanation;
+  explanationBox.classList.remove("hidden");
+  pepBanner.classList.remove("hidden");
+  nextBtn.classList.remove("hidden");
+  nextBtn.textContent =
+    currentIndex === currentQuestions.length - 1 ? "See Result 🏆" : "Next Question ➔";
+}
+
+function handleTimeOut() {
+  if (answered) return;
+  answered = true;
+  streak = 0;
+  streakBadge.textContent = `🔥 Streak: 0`;
+  SoundFX.stopTension();
+  SoundFX.playLaugh();
+
+  const q = currentQuestions[currentIndex];
+  const allChoiceBtns = choicesList.querySelectorAll(".choice-btn");
+  allChoiceBtns.forEach((b) => (b.disabled = true));
+  allChoiceBtns[q.correctIndex].classList.add("correct");
+
+  explanationText.textContent = `Time's up! ${q.explanation}`;
+  pepBanner.textContent = "الوقت خلص بس اللعب مكمل.. كمّل كده في السؤال الجاي ⚡";
+  setOperator(2, "الوقت سبقك المرة دي، بس لسه قدامك فرصة تثبت نفسك! 🎯");
+  explanationBox.classList.remove("hidden");
+  pepBanner.classList.remove("hidden");
+  nextBtn.classList.remove("hidden");
+  nextBtn.textContent =
+    currentIndex === currentQuestions.length - 1 ? "See Result 🏆" : "Next Question ➔";
+}
+
+nextBtn.addEventListener("click", () => {
+  currentIndex++;
+  if (currentIndex < currentQuestions.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult() {
+  clearInterval(timerInterval);
+  SoundFX.stopTension();
+  gameScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  resultPlayerText.textContent = `Great job, ${playerName}!`;
+  finalScore.textContent = score;
+  finalMeta.textContent = `${currentQuestions.length} Unique Qs • ${selectedLevel}`;
+
+  if (score >= currentQuestions.length * levelSettings[selectedLevel].points * 0.7) {
+    finalCheerText.textContent = `أداء أسطوري يا ${playerName}! كملت المهمة باقتدار 🏆🔥`;
+  } else {
+    finalCheerText.textContent = `عاش إنك كملت التحدي يا ${playerName}.. كمّل كده في الجولة الجاية 💪`;
+  }
+}
+
+restartBtn.addEventListener("click", () => {
+  resultScreen.classList.add("hidden");
+  startScreen.classList.remove("hidden");
+  updatePreview();
+});
+
+startBtn.addEventListener("click", startGame);
+</script>
