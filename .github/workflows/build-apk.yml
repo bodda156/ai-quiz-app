@@ -26,7 +26,8 @@ jobs:
 
       - name: Install dependencies and sync Capacitor
         run: |
-          npm install
+          mkdir -p www
+          npm install --legacy-peer-deps
           npx cap sync android
 
       - name: Build Debug APK
